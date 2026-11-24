@@ -70,6 +70,12 @@ export async function downloadQrPng(tableId: string, label: string) {
   URL.revokeObjectURL(url);
 }
 
+/** Fetches a QR PNG and returns a blob: URL suitable for use in <img src>. Caller must revoke it. */
+export async function fetchQrBlobUrl(tableId: string): Promise<string> {
+  const response = await api.get(`/api/tables/${tableId}/qr.png`, { responseType: 'blob' });
+  return URL.createObjectURL(response.data);
+}
+
 export async function downloadBranchQrPdf(branchId: string, branchName: string) {
   const response = await api.get(`/api/branches/${branchId}/qr.pdf`, { responseType: 'blob' });
   const url = URL.createObjectURL(response.data);

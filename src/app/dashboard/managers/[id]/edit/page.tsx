@@ -1,6 +1,4 @@
 'use client';
-
-import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useManagers, useUpdateManager } from '@/hooks/useManagers';
@@ -11,8 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AxiosError } from 'axios';
 import { ApiError } from '@/types';
 
-export default function EditManagerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EditManagerPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const { data: managers, isLoading: managersLoading } = useManagers();
   const { data: branches = [], isLoading: branchesLoading } = useBranches();

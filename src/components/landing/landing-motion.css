@@ -3,14 +3,14 @@
   --sr-maroon: #6b0516;
   --sr-orange: #ec6608;
   --sr-cream:  #fbf4ea;
-  --sr-intro:  4.8s; /* splash length; hero animations start after it */
+  --sr-intro:  4.8s;
 }
 
 @media (prefers-reduced-motion: reduce) {
   :root { --sr-intro: 0s; }
 }
 
-/* ── Hero logo wrap ───────────────────────────────────────────────────────── */
+/* ── Hero / Nav logo wrap ─────────────────────────────────────────────────── */
 .sr-logo-wrap {
   position: relative;
   width: 100%;
@@ -181,12 +181,6 @@
 }
 
 /* ── Intro splash ─────────────────────────────────────────────────────────── */
-/* Piece timeline (4.2s each): fly in 1.1s · hold 2.0s · fly out 1.1s.
-   Staggered delays keep entrances and exits from colliding.
-   Backdrop (4.7s) starts fading at ~3.4s, when first pieces are leaving.
-   Secondary animations (float, steam, pin-pulse, flame) fire during the hold
-   window (~1.1s–3.1s from first piece landing). */
-
 .sr-splash {
   position: fixed;
   inset: 0;
@@ -208,7 +202,6 @@
   position: relative;
   width: min(82vw, 780px);
   aspect-ratio: 1375 / 702;
-  /* gentle float while all pieces are assembled (starts ~1s in, lasts ~2s) */
   animation: sr-stage-float 2s ease-in-out 1.1s 1 both;
 }
 
@@ -258,7 +251,6 @@
 .sr-piece-leaf   { --dx: -50vw; --dy: 95vh;   --rot: -70deg; --delay: 0.45s; }
 .sr-piece-steam  { --dx: 5vw;   --dy: -100vh; --rot: 0deg;   --delay: 0.5s;  }
 
-/* steam piece pulses in opacity while held — simulates it rising */
 .sr-piece-steam {
   animation: sr-piece 4.2s both 0.5s, sr-splash-steam 0.9s ease-in-out 1.4s 2 alternate;
 }
@@ -267,16 +259,14 @@
   100% { opacity: 1;   transform: translateY(-4%) scale(1.01); }
 }
 
-/* leaf piece sways gently while held */
 .sr-piece-leaf {
   animation: sr-piece 4.2s both 0.45s, sr-splash-leaf 1.1s ease-in-out 1.3s 2 alternate;
 }
 @keyframes sr-splash-leaf {
-  0%   { transform: rotate(0deg)   scale(1);    }
-  100% { transform: rotate(-2deg)  scale(1.01); }
+  0%   { transform: rotate(0deg)  scale(1);    }
+  100% { transform: rotate(-2deg) scale(1.01); }
 }
 
-/* pin piece bobs up and down while held */
 .sr-piece-pin {
   animation: sr-piece 4.2s both 0.4s, sr-splash-pin 0.7s ease-in-out 1.2s 3 alternate;
 }
@@ -285,7 +275,6 @@
   100% { transform: translateY(-3%); }
 }
 
-/* swoosh piece subtly brightens (feels like light catching it) */
 .sr-piece-swoosh {
   animation: sr-piece 4.2s both 0.3s, sr-splash-swoosh 1.2s ease-in-out 1.4s 2 alternate;
 }

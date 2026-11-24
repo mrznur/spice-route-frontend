@@ -1,6 +1,4 @@
 'use client';
-
-import { use } from 'react';
 import { toast } from 'sonner';
 import { useBulkCreateTables } from '@/hooks/useTables';
 import { useBranches } from '@/hooks/useBranches';
@@ -9,8 +7,8 @@ import { FormShell } from '@/components/ui/form-shell';
 import { AxiosError } from 'axios';
 import { ApiError, BulkTablesResponse } from '@/types';
 
-export default function BulkTablesPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: branchId } = use(params);
+export default function BulkTablesPage({ params }: { params: { id: string } }) {
+  const { id: branchId } = params;
   const bulkCreate = useBulkCreateTables(branchId);
   const { data: branches } = useBranches();
   const branch = branches?.find((b) => b.id === branchId);

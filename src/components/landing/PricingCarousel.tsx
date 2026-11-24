@@ -1,25 +1,11 @@
 'use client';
 
-import { useState, useRef, type CSSProperties, type ReactNode } from 'react';
+import { useState, useRef, type CSSProperties } from 'react';
 import Link from 'next/link';
 import { CheckCircle } from 'lucide-react';
+import type { Plan } from '@/components/landing/data/plans';
 
-export interface CarouselPlan {
-  name: string;
-  price: string;
-  priceSuffix?: string;
-  tagline: string;
-  cta: string;
-  href: string;
-  featured?: boolean;
-  icon: ReactNode;
-  iconColor: string;
-  barColor: string;
-  featuresLabel: string;
-  features: string[];
-}
-
-export function PricingCarousel({ plans }: { plans: CarouselPlan[] }) {
+export function PricingCarousel({ plans }: { plans: Plan[] }) {
   const [active, setActive] = useState(1); // start on Growth
   const touchStartX = useRef<number | null>(null);
 
@@ -135,7 +121,7 @@ function CarouselCard({
   onTapPrev,
   onTapNext,
 }: {
-  plan: CarouselPlan;
+  plan: Plan;
   onTapPrev?: () => void;
   onTapNext?: () => void;
 }) {

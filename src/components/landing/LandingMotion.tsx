@@ -41,6 +41,36 @@ export function HeroLogo() {
 }
 
 /**
+ * NavLogo: the same animated logo scaled to fit the navbar.
+ * Uses a plain img with explicit dimensions — no aspect-ratio wrapper
+ * that would fight the fixed nav height.
+ */
+export function NavLogo() {
+  return (
+    <div style={{ position: 'relative', width: 110, height: 56, flexShrink: 0 }}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/spice-route-logo.webp"
+        alt="Spice Route"
+        className="sr-logo-img"
+        width={1375}
+        height={702}
+        style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+      />
+      <div className="sr-flame-glow" aria-hidden="true" />
+      <svg className="sr-steam" viewBox="0 0 80 100" aria-hidden="true" preserveAspectRatio="none">
+        <path className="sr-wisp w1" d="M40 95 C 24 76, 56 60, 40 42 C 30 28, 46 14, 40 4" />
+        <path className="sr-wisp w2" d="M22 90 C 10 74, 34 60, 22 44 C 15 34, 26 20, 22 10" />
+        <path className="sr-wisp w3" d="M58 90 C 48 76, 68 62, 58 46 C 50 36, 62 22, 58 12" />
+      </svg>
+      <div className="sr-pin-wrap" aria-hidden="true">
+        <span className="sr-ripple"><i /><i /><i /></span>
+      </div>
+    </div>
+  );
+}
+
+/**
  * ScrollRoute: a thin route line fixed to the left edge. It draws itself as
  * you scroll and the pin travels along it.
  * Visible from the xl breakpoint up so it never crowds mobile layouts.
