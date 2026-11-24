@@ -167,3 +167,137 @@ a.bg-\[var\(--ds-orange\)\]:active {
   box-shadow: none;
   transform: translateY(0);
 }
+
+/* ------------------------------------------------------------------ */
+/* Shared spotlight base (feature + pricing cards)                     */
+/* ------------------------------------------------------------------ */
+.lp-feature-card,
+.lp-pricing-card {
+  --mx: 50%;
+  --my: 0%;
+  position: relative;
+  isolation: isolate;
+  border-radius: 16px;
+}
+
+/* Border ring: faint at rest, lights up near the cursor */
+.lp-feature-card::before,
+.lp-pricing-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  padding: 1px;
+  border-radius: inherit;
+  background: radial-gradient(
+    260px circle at var(--mx) var(--my),
+    var(--card-accent),
+    color-mix(in srgb, var(--ds-text) 10%, transparent) 70%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* Spotlight fill inside the card */
+.lp-feature-card::after,
+.lp-pricing-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: radial-gradient(
+    320px circle at var(--mx) var(--my),
+    color-mix(in srgb, var(--card-accent) 15%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.lp-feature-card:hover::after,
+.lp-pricing-card:hover::after {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/* Feature card                                                        */
+/* ------------------------------------------------------------------ */
+.lp-feature-card {
+  padding: 1.75rem;
+  background: var(--ds-surface, var(--ds-bg));
+}
+
+.lp-feature-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 1.25rem;
+  border-radius: 12px;
+  color: var(--card-accent);
+  background: color-mix(in srgb, var(--card-accent) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--card-accent) 35%, transparent);
+}
+
+.lp-feature-title {
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--ds-text);
+}
+
+.lp-feature-desc {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ds-text-2);
+}
+
+/* ------------------------------------------------------------------ */
+/* Pricing card                                                        */
+/* ------------------------------------------------------------------ */
+.lp-pricing-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* clips the 3px top bar to the rounded corners */
+  background: var(--ds-bg);
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.lp-pricing-card--featured {
+  background: var(--ds-elevated);
+  transform: translateY(-6px);
+  box-shadow: 0 4px 32px rgba(122, 14, 34, 0.18);
+}
+.lp-pricing-card--featured::before {
+  background: radial-gradient(
+    260px circle at var(--mx) var(--my),
+    var(--ds-orange),
+    var(--ds-accent) 70%
+  );
+}
+.lp-pricing-card--featured::after {
+  opacity: 0.55; /* permanent faint glow */
+}
+.lp-pricing-card--featured:hover::after {
+  opacity: 1;
+}
+.lp-pricing-card--featured:hover {
+  box-shadow: 0 8px 48px rgba(122, 14, 34, 0.3);
+}
+
+/* ------------------------------------------------------------------ */
+/* Touch devices and reduced motion: no spotlight                      */
+/* ------------------------------------------------------------------ */
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .lp-feature-card::after,
+  .lp-pricing-card::after {
+    display: none;
+  }
+  .lp-pricing-card {
+    transition: none;
+  }
+}

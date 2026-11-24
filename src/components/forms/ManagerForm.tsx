@@ -66,7 +66,7 @@ function CreateForm({ branches, branchesLoading, onSubmit }: CreateManagerFormPr
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="password">Password <span style={{ color: 'var(--ds-red-text)' }}>*</span></Label>
-        <Input id="password" type="password" placeholder="At least 6 characters" {...register('password')} className={errors.password ? 'border-[var(--ds-red)]' : ''} />
+        <Input id="password" type="password" placeholder="At least 8 characters" {...register('password')} className={errors.password ? 'border-[var(--ds-red)]' : ''} />
         {errors.password && <p className="text-xs" style={{ color: 'var(--ds-red-text)' }}>{errors.password.message}</p>}
       </div>
       <BranchSelector control={control} branches={branches} branchesLoading={branchesLoading} name="branchIds" />

@@ -1,6 +1,4 @@
 'use client';
-
-import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useCreateTable } from '@/hooks/useTables';
@@ -10,8 +8,8 @@ import { FormShell } from '@/components/ui/form-shell';
 import { AxiosError } from 'axios';
 import { ApiError } from '@/types';
 
-export default function NewTablePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id: branchId } = use(params);
+export default function NewTablePage({ params }: { params: { id: string } }) {
+  const { id: branchId } = params;
   const router = useRouter();
   const { data: branches } = useBranches();
   const branch = branches?.find((b) => b.id === branchId);

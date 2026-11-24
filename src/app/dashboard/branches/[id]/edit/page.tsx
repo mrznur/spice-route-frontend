@@ -1,6 +1,4 @@
 'use client';
-
-import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useBranches, useUpdateBranch } from '@/hooks/useBranches';
@@ -10,8 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AxiosError } from 'axios';
 import { ApiError } from '@/types';
 
-export default function EditBranchPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+export default function EditBranchPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const router = useRouter();
   const { data: branches, isLoading } = useBranches();
   const branch = branches?.find((b) => b.id === id);

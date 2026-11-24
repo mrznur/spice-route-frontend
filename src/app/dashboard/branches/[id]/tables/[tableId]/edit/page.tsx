@@ -1,6 +1,4 @@
 'use client';
-
-import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useTables, useUpdateTable } from '@/hooks/useTables';
@@ -11,8 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AxiosError } from 'axios';
 import { ApiError } from '@/types';
 
-export default function EditTablePage({ params }: { params: Promise<{ id: string; tableId: string }> }) {
-  const { id: branchId, tableId } = use(params);
+export default function EditTablePage({ params }: { params: { id: string; tableId: string } }) {
+  const { id: branchId, tableId } = params;
   const router = useRouter();
   const { data: branches } = useBranches();
   const branch = branches?.find((b) => b.id === branchId);
@@ -38,9 +36,18 @@ export default function EditTablePage({ params }: { params: Promise<{ id: string
       title="Edit Table"
       subtitle="Update table label or status."
     >
-      {isLoading && <div className="space-y-4"><Skeleton className="h-9 w-full" /><Skeleton className="h-9 w-24" /></div>}
-      {!isLoading && !table && <p className="text-sm text-red-500">Table not found.</p>}
-      {!isLoading && table && <TableForm defaultValues={table} onSubmit={handleSubmit} submitLabel="Save Changes" />}
+      {isLoading && (
+        <div className="space-y-4">
+          <Skeleton className="h-9 w-full" />
+          <Skeleton className="h-9 w-24" />
+        </div>
+      )}
+      {!isLoading && !table && (
+        <p className="text-sm" style={{ color: 'var(--ds-red-text)' }}>Table not found.</p>
+      )}
+      {!isLoading && table && (
+        <TableForm defaultValues={table} onSubmit={handleSubmit} submitLabel="Save Changes" />
+      )}
     </FormShell>
   );
 }
