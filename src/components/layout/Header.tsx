@@ -1,9 +1,10 @@
 'use client';
 
-import { Menu, LogOut, User, ChevronDown } from 'lucide-react';
+import { Menu, LogOut, User, ChevronDown, MessageSquare } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
+import { useFeedbackStats } from '@/hooks/useFeedback';
 import { cn } from '@/lib/utils';
 
 interface HeaderProps { onMenuClick: () => void; }
@@ -20,11 +21,15 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
 };
 
 export function Header({ onMenuClick }: HeaderProps) {
-  const { user, logout } = useAuth();
+  const { user, logout, isSuperAdmin } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  // F7.1 — today's feedback count (only for owner/manager, not super admin)
+  const { data: stats } = useFeedbackStats();
+  const showFeedbackBadge = !isSuperAdmin && stats?.totalFeedback != null && stats.totalFeedback > 0;
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -54,10 +59,22 @@ export function Header({ onMenuClick }: HeaderProps) {
         <Menu className="h-4 w-4" />
       </button>
 
-      <div className="flex-1 min-w-0">
-        <span className="text-sm font-semibold" style={{ color: 'var(--ds-text)' }}>{pageInfo.title}</span>
-        {pageInfo.subtitle && (
-          <span className="hidden sm:inline text-sm ml-2" style={{ color: 'var(--ds-text-3)' }}>— {pageInfo.subtitle}</span>
+      <div className="flex-1 min-w-0 flex items-center gap-3">
+        <div>
+          <span className="text-sm font-semibold" style={{ color: 'var(--ds-text)' }}>{pageInfo.title}</span>
+          {pageInfo.subtitle && (
+            <span className="hidden sm:inline text-sm ml-2" style={{ color: 'var(--ds-text-3)' }}>— {pageInfo.subtitle}</span>
+          )}
+        </div>
+        {/* F7.1 — total feedback pill */}
+        {showFeedbackBadge && (
+          <span
+            className="hidden md:inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium"
+            style={{ background: 'var(--ds-accent-muted)', color: 'var(--ds-accent-text)' }}
+          >
+            <MessageSquare className="h-3 w-3" />
+            {stats!.totalFeedback.toLocaleString()} total feedback
+          </span>
         )}
       </div>
 

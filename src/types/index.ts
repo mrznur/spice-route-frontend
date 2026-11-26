@@ -1,3 +1,4 @@
+
 export type Role = 'SUPER_ADMIN' | 'OWNER' | 'MANAGER';
 
 export interface User {
@@ -8,11 +9,9 @@ export interface User {
   restaurantId: string | null;
 }
 
-export interface AuthResponse {
-  accessToken: string;
-  refreshToken: string;
-  user: User;
-}
+// Login, registration and refresh return the user directly.
+// Authentication tokens are delivered through HttpOnly cookies.
+export type AuthResponse = User;
 
 export interface BranchResponse {
   id: string;
@@ -99,6 +98,7 @@ export interface MeResponse {
 }
 
 // ── Feedback ────────────────────────────────────────────────────
+
 export interface FeedbackResponse {
   id: string;
   branchId: string;
@@ -136,4 +136,33 @@ export interface SubmitFeedbackRequest {
   customerName?: string;
   customerPhone?: string;
   language?: string;
+}
+
+// ── AI Summary ──────────────────────────────────────────────────
+
+export interface AiSummaryRequest {
+  branchId: string;
+  dateFrom: string; // yyyy-MM-dd
+  dateTo: string;   // yyyy-MM-dd
+}
+
+export interface AiFinding {
+  finding: string;
+  mentionCount: number;
+  examples: string[];
+}
+
+export interface AiSummaryResponse {
+  summaryId: string;
+  branchId: string;
+  dateFrom: string;
+  dateTo: string;
+  commentCount: number;
+  cached: boolean;
+  generatedAt: string;
+  overallSentiment: 'positive' | 'mixed' | 'negative';
+  praises: AiFinding[];
+  complaints: AiFinding[];
+  recurringIssues: string[];
+  suggestions: string[];
 }

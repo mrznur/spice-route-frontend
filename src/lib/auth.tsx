@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, {
@@ -7,14 +8,14 @@ import React, {
   useState,
   useCallback,
 } from 'react';
-import { User, AuthResponse } from '@/types';
+import api from '@/lib/api';
+import type { User, AuthResponse } from '@/types';
 
 interface AuthContextValue {
   user: User | null;
-  accessToken: string | null;
   isLoading: boolean;
   login: (data: AuthResponse) => void;
-  logout: () => void;
+  logout: () => Promise<void>;
   isOwner: boolean;
   isManager: boolean;
   isSuperAdmin: boolean;
@@ -22,57 +23,79 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-function setTokenCookie(token: string) {
-  document.cookie = `accessToken=${token}; Path=/; SameSite=Strict`;
-}
-
-function clearTokenCookie() {
-  document.cookie =
-    'accessToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Restore the session using the HttpOnly refresh cookie.
   useEffect(() => {
-    try {
-      const storedToken = localStorage.getItem('accessToken');
-      const storedUser = localStorage.getItem('user');
-      if (storedToken && storedUser) {
-        setAccessToken(storedToken);
-        setUser(JSON.parse(storedUser));
-        setTokenCookie(storedToken);
+    let cancelled = false;
+
+    async function restoreSession() {
+      try {
+        const { data } = await api.post<User>('/api/auth/refresh');
+
+        if (!cancelled) {
+          setUser(data);
+
+          try {
+            localStorage.setItem('user', JSON.stringify(data));
+          } catch {
+            // Session still works if local storage is unavailable.
+          }
+        }
+      } catch {
+        if (!cancelled) {
+          setUser(null);
+
+          try {
+            localStorage.removeItem('user');
+          } catch {
+            // Ignore storage errors.
+          }
+        }
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
       }
-    } catch {
-      // corrupted storage
-    } finally {
-      setIsLoading(false);
     }
+
+    restoreSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = useCallback((data: AuthResponse) => {
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setTokenCookie(data.accessToken);
-    setAccessToken(data.accessToken);
-    setUser(data.user);
+    setUser(data);
+
+    try {
+      localStorage.setItem('user', JSON.stringify(data));
+    } catch {
+      // Authentication uses HttpOnly cookies, not local storage.
+    }
   }, []);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
-    clearTokenCookie();
-    setAccessToken(null);
-    setUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch {
+      // Clear local state even if the logout request fails.
+    } finally {
+      setUser(null);
+
+      try {
+        localStorage.removeItem('user');
+      } catch {
+        // Ignore storage errors.
+      }
+    }
   }, []);
 
   const value: AuthContextValue = {
     user,
-    accessToken,
     isLoading,
     login,
     logout,
@@ -81,11 +104,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isSuperAdmin: user?.role === 'SUPER_ADMIN',
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used inside AuthProvider');
+
+  if (!ctx) {
+    throw new Error('useAuth must be used inside AuthProvider');
+  }
+
   return ctx;
 }

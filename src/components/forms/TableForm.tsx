@@ -43,16 +43,16 @@ export function TableForm({ defaultValues, onSubmit, submitLabel = 'Save' }: Tab
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
       <div className="space-y-1.5">
         <Label htmlFor="label">
-          Table label <span className="text-red-500">*</span>
+          Table label <span style={{ color: 'var(--ds-red-text)' }}>*</span>
         </Label>
         <Input
           id="label"
           placeholder="Table 1"
           {...register('label')}
-          className={errors.label ? 'border-red-500' : ''}
+          className={errors.label ? 'border-[var(--ds-red)]' : ''}
         />
         {errors.label && (
-          <p className="text-xs text-red-500">{errors.label.message}</p>
+          <p className="text-xs" style={{ color: 'var(--ds-red-text)' }}>{errors.label.message}</p>
         )}
       </div>
 
